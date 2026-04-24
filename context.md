@@ -1,6 +1,6 @@
-# ProfitPilot — Context
+# PilotProfit — Context
 
-> **Vision business complète de ProfitPilot.**
+> **Vision business complète de PilotProfit.**
 > **Claude Code lit ce fichier pour comprendre POURQUOI on construit chaque feature.**
 
 ---
@@ -11,11 +11,11 @@ Les merchants Shopify perdent **30 000 $/an** en moyenne à cause de 4 douleurs 
 
 ### 1. Profit fantôme (le merchant pense gagner 48%, il gagne 23%)
 
-Le store moyen sous-compte 30 à 85% de son ad spend réel. BeProfit (200+ reviews) n'importe que **15 % du Google Ads spend**, ce qui gonfle artificiellement les profits affichés. TrueProfit (300+ reviews) a des "données fausses" documentées dans 7 reviews 1★ et une LTV qui inclut les non-acheteurs. Les post-purchase upsells cassent les chiffres chez AMP/Lifetimely. Conséquence : le merchant prend des décisions stratégiques (ajout produit, scaling ads, embauche) sur une base comptable mensongère.
+Le store moyen sous-compte 30 à 85% de son ad spend réel. BeProfit (200+ reviews) n'importe que **15 % du Google Ads spend**, ce qui gonfle artificiellement les profits affichés. TrueProfit (300+ reviews) a des "données fausses" documentées dans 7 reviews 1★ et une LTV qui inclut les non-acheteurs. Les post-purchase upsells cassent les chiffres chez AMP/Lifetimely. Les merchants multi-devises perdent 1-3% par transaction sur le FX sans que personne ne le track. Conséquence : le merchant prend des décisions stratégiques (ajout produit, scaling ads, embauche) sur une base comptable mensongère.
 
 ### 2. Chargebacks qui drainent la marge
 
-Un merchant e-commerce perd en moyenne **800 $/mois en chargebacks**. Un thread Reddit à 230 upvotes documente 4 **heures par jour** passées à assembler manuellement les preuves. Les outils actuels soumettent automatiquement sans approbation (Chargeflow : 20+ reviews 1★ pour "auto submit without key evidence", "they just submit a prompt from ChatGPT"), ou bloquent trop de commandes légitimes (NoFraud/Wyllo : "too sensitive, cancelling genuine orders. Probably costing me more in lost orders than fraud"). Le merchant est pris entre deux feux : laisser passer la fraude ou perdre des ventes réelles.
+Un merchant e-commerce perd en moyenne **800 $/mois en chargebacks**. Un thread Reddit à 230 upvotes documente 4 **heures par jour** passées à assembler manuellement les preuves. Les outils actuels soumettent automatiquement sans approbation (Chargeflow : 20+ reviews 1★ pour "auto submit without key evidence", "they just submit a prompt from ChatGPT"), ou bloquent trop de commandes légitimes (NoFraud/Wyllo : "too sensitive, cancelling genuine orders. Probably costing me more in lost orders than fraud"). Le merchant est pris entre deux feux : laisser passer la fraude ou perdre des ventes réelles. À cela s'ajoute le card testing massif (thread Reddit 40 upvotes : "store fermé 2 ans, $25K+ en frais potentiels") que les outils généralistes ne détectent pas correctement.
 
 **Stats marché (Mastercard 2025 + Market Clarity) :**
 - 33,78 milliards $ drainés des retailers en 2025
@@ -39,14 +39,14 @@ De minimis 800 $ **mort pour China/HK** depuis mai 2025. Tarifs US changent tout
 
 ## SOLUTION
 
-ProfitPilot est un **agent IA santé financière complète** pour merchants Shopify. Pas un dashboard passif qui affiche des chiffres. Un système multi-agents orchestré par un Supervisor qui DÉTECTE, ANALYSE, AGIT et APPREND — sur les 4 dimensions financières critiques en même temps.
+PilotProfit est un **agent IA santé financière complète** pour merchants Shopify. Pas un dashboard passif qui affiche des chiffres. Un système multi-agents orchestré par un Supervisor qui DÉTECTE, ANALYSE, AGIT et APPREND — sur les 4 dimensions financières critiques en même temps.
 
 ### Architecture multi-agents (Supervisor Pattern)
 
 Un **Supervisor Agent** (LangGraph) route les tâches vers **5 agents spécialistes**, chacun régi par sa propre **Constitution** (fichier markdown qui définit ses règles non-négociables, chargé en system prompt à chaque invocation) :
 
-1. **Profit Analyst Agent** — True profit, LTV propre, landed cost, cashflow
-2. **Fraud Investigator Agent** — Pre-Ship Score, patterns detection, False Positive tracking
+1. **Profit Analyst Agent** — True profit, LTV propre, landed cost, cashflow, FX loss
+2. **Fraud Investigator Agent** — Pre-Ship Score, patterns detection, card testing, False Positive tracking
 3. **Chargeback Specialist Agent** — Evidence building, workflow human-in-loop, recovery
 4. **Data Integrity Agent** — Reconciliation Shopify ↔ Stripe ↔ Meta ↔ notre DB
 5. **Ads Sync Agent** — Meta/Google/TikTok spend 100%, attribution cleaning, integration health
@@ -66,7 +66,7 @@ Le Supervisor observe tous les agents via un dashboard admin interne (`/admin/ag
    - Claude API (Opus) pour interprétation (alerts en langage simple, evidence drafting)
    - Mem0 pour le contexte historique (patterns merchant, fraud ML calibration par store, baseline profit)
    - Rules engine pour fraud scoring (architecture 4-tier : blocking / scoring / ML / human review)
-   - Formules de vérité pour profit (True Profit, Landed Cost, LTV propre)
+   - Formules de vérité pour profit (True Profit, Landed Cost, LTV propre, FX Loss)
    - Cross-LLM review pour décisions high-stakes (evidence chargeback, smart hold > 1000 $, margin alerts critiques)
 
 3. **AGIR**
@@ -74,7 +74,7 @@ Le Supervisor observe tous les agents via un dashboard admin interne (`/admin/ag
    - Smart Hold automatique pour orders > 75 % risque (safe orders passent sans friction)
    - Auto-Evidence Builder : PDF 10-20 pages en 1 clic au format Visa/Mastercard — **toujours avec approbation humaine avant submission**
    - Email "menace polie" automatique au customer chargebacker
-   - Alertes push/email/in-app : profit drop, margin breach, chargeback spike, integration down
+   - Alertes push/email/in-app : profit drop, margin breach, chargeback spike, integration down, card testing attack
    - Tax export 1-click (QuickBooks, Xero, CSV)
 
 4. **APPRENDRE (Feedback Loop Self-Improving)**
@@ -91,13 +91,13 @@ Le Supervisor observe tous les agents via un dashboard admin interne (`/admin/ag
 
 ### Ce qui nous rend différents
 
-Les concurrents traitent chaque problème en silo. ProfitPilot est le **seul** à unifier les 4 dans un système multi-agents orchestré qui apprend :
+Les concurrents traitent chaque problème en silo. PilotProfit est le **seul** à unifier les 4 dans un système multi-agents orchestré qui apprend :
 - TrueProfit fait du profit — mais pas de fraude et des données fausses
 - Chargeflow fait de la fraude — mais pas de profit et submit aveugle
 - AMP/Lifetimely fait du LTV — mais casse avec les upsells post-purchase
 - NoFraud fait du screening — mais bloque trop et tue les ventes légitimes
 
-**ProfitPilot = un Supervisor Agent, 5 spécialistes, une seule source de vérité financière, un merchant qui ne pense plus "combien j'ai vendu" mais "combien j'ai gardé".**
+**PilotProfit = un Supervisor Agent, 5 spécialistes, une seule source de vérité financière, un merchant qui ne pense plus "combien j'ai vendu" mais "combien j'ai gardé".**
 
 ---
 
@@ -105,11 +105,11 @@ Les concurrents traitent chaque problème en silo. ProfitPilot est le **seul** �
 
 ### Module 1 — Profit (15 features)
 
-True Profit par produit/order/canal, App Cost Allocator, Daily P&L temps réel, Margin Alerts, Ad Spend Tracker 100 %, Return Cost Calculator, OPEX Categorizer, Tax Ready Export, Cashflow Forecast 30/60/90j, Data Integrity Check, Proactive Bug Alert, LTV propre (sans bots/non-acheteurs), Multi-Fulfillment Sync (ShipStation + ShipBob + Amazon MCF), Post-Purchase Upsell Tracker.
+True Profit par produit/order/canal, App Cost Allocator, Daily P&L temps réel, Margin Alerts, Ad Spend Tracker 100 %, Return Cost Calculator, OPEX Categorizer, Tax Ready Export, Cashflow Forecast 30/60/90j, Data Integrity Check, Proactive Bug Alert, LTV propre (sans bots/non-acheteurs), Multi-Fulfillment Sync (ShipStation + ShipBob + Amazon MCF), Post-Purchase Upsell Tracker, **Currency FX Loss Tracker** (exclusivité — pertes cachées sur conversions multi-devises).
 
 ### Module 2 — Anti-Fraude (18 features, ex-ChargebackShield fusionné le 08/04/2026)
 
-Pre-Ship Score 0-100 avec cross-order pattern detection, Smart Hold auto, Auto-Evidence Builder (**approbation humaine obligatoire**), Email "menace polie" auto, Intégration recouvrement TSI/Rocket, Plainte IC3 FBI pré-remplie, Ratio Monitor temps réel (alerte avant 0.9 % Visa / 1.0 % MC), Blacklist partagée cross-merchants (tokenisée), Friendly Fraud Detector, Billing Descriptor Checker, Payment Processor Health Dashboard, Revenue Dashboard (ROI visible), Proactive Evidence Reminder, Business Model Adapter (digital/physique/dropship/abo), AMEX Risk Alert, Freight Forwarder Detection (+30 pts risque), Refund vs Contest Calculator, 3DS Recommender pour orders high-risk.
+Pre-Ship Score 0-100 avec cross-order pattern detection, Smart Hold auto, Auto-Evidence Builder (**approbation humaine obligatoire**), Email "menace polie" auto, Intégration recouvrement TSI/Rocket, Plainte IC3 FBI pré-remplie, Ratio Monitor temps réel (alerte avant 0.9 % Visa / 1.0 % MC), Blacklist partagée cross-merchants (tokenisée), Friendly Fraud Detector, Billing Descriptor Checker, Payment Processor Health Dashboard, Revenue Dashboard (ROI visible), Proactive Evidence Reminder, Business Model Adapter (digital/physique/dropship/abo), AMEX Risk Alert, Freight Forwarder Detection (+30 pts risque), Refund vs Contest Calculator, 3DS Recommender pour orders high-risk, **Card Testing Detector** (détection de séquences micro-transactions, attaques bot-driven).
 
 ### Module 3 — Intelligence (5 features, avril 2026)
 
@@ -146,10 +146,11 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 - "Mon dispute rate monte, si je passe 0.9 % je me fais bannir — j'ai perdu mon ancien business comme ça"
 - "Mon comptable me facture 1200 $/mois parce que mes données sont un bordel"
 - "Les tarifs China changent, je n'arrive pas à savoir si je dois re-pricer ou absorber"
+- "Je vends en USD, EUR, GBP — je n'ai aucune idée de combien je perds en FX"
 
 **Plan cible :** Pro (129 $/mois) ou Enterprise (249 $/mois).
 
-**Trigger d'achat :** monitoring Visa/MC activé, deuxième store lancé, ou année fiscale qui approche sans export propre.
+**Trigger d'achat :** monitoring Visa/MC activé, deuxième store lancé, année fiscale qui approche sans export propre, ou attaque de card testing subie.
 
 ### 3. Agence DTC / studio merchant — 5-30 stores clients
 
@@ -173,8 +174,8 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 | Plan | Prix | Orders/mois | Profit | Anti-Fraude | Intelligence + Tarifs |
 |------|------|-------------|--------|-------------|------------------------|
 | **Free** | 0 $ | 50 | Basique (P&L simple) | Pre-Ship Score basique | — |
-| **Starter** | 49 $/mois | 500 | 1 store, Daily P&L, tax export | Pre-Ship Score complet, Smart Hold | Smart Alerts |
-| **Pro** | 129 $/mois | 2 000 | Multi-stores, fiscal, prédictions | Auto-evidence, Blacklist, False Positive Tracker | Tous les modules |
+| **Starter** | 49 $/mois | 500 | 1 store, Daily P&L, tax export | Pre-Ship Score complet, Smart Hold, Card Testing Detector | Smart Alerts |
+| **Pro** | 129 $/mois | 2 000 | Multi-stores, fiscal, prédictions, FX Loss | Auto-evidence, Blacklist, False Positive Tracker | Tous les modules |
 | **Enterprise** | 249 $/mois | Illimité | Multi-store + advisory IA | Recouvrement intégré, API | Tous + API |
 
 ### Principes de pricing
@@ -198,7 +199,7 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 ## MARCHÉ
 
 - **TAM Shopify :** 2M+ stores actifs
-- **SAM ProfitPilot** (stores >5K $/mois CA, sérieux sur leur compta) : ~400K stores
+- **SAM PilotProfit** (stores >5K $/mois CA, sérieux sur leur compta) : ~400K stores
 - **SOM année 1 :** 0,2% du SAM = 800 clients × 85 $/mois × 12 = **~820K $ ARR**
 
 ### Croissance marché
@@ -206,6 +207,7 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 - Shopify Agentic Commerce (mars 2026) : AI orders ×15 depuis janv 2025. Les merchants vendent via ChatGPT Shopping, Copilot, Gemini. Le volume d'orders va exploser → besoin de tracking profit + fraude automatique devient critique.
 - US tariffs instables (fév-mars 2026) : le pain point landed cost va durer 2-3 ans minimum.
 - Mastercard project +24 % de chargebacks d'ici 2028 : le pain point fraude s'aggrave, pas l'inverse.
+- Card testing attacks en hausse (bots + AI automation) : le pain point anti-bot devient un must-have, pas un nice-to-have.
 
 ---
 
@@ -222,6 +224,7 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 |--------|---------|-------------|
 | "Comment les chargebacks sont-ils légaux ?" | 53 | Banks incitées à favoriser le client. AMEX pire processor. Recouvrement fonctionne. |
 | "4 200 $ chargeback" | 125 | Transitaires = risque max. GPS UPS comme preuve. Billing descriptor critique. 3DS shift responsabilité. |
+| "Centaines de commandes bots, milliers de faux comptes" | 40 | Card testing massif. Store fermé 2 ans. $25K+ en frais potentiels. Cloudflare + capture manuelle comme défense. |
 | "I pay 287$/month in apps, no idea which are worth it" | — | App Cost Allocator validé. |
 | "I spend 20h/month on bookkeeping" | — | OPEX Categorizer + Tax Ready validés. |
 
@@ -231,19 +234,21 @@ Landed Cost Calculator (COGS + shipping + tarif = vraie marge), Tariff Impact Si
 
 ### Profit
 
-| Concurrent | Reviews | Gap que ProfitPilot exploite |
+| Concurrent | Reviews | Gap que PilotProfit exploite |
 |------------|---------|------------------------------|
 | **TrueProfit** | 300+ (7× 1★) | "Données fausses" documentées → notre Data Integrity Check quotidien. LTV inclut non-acheteurs → notre LTV propre. Pricing explosif (+400 %) → notre garantie 12 mois. |
 | **BeProfit** | 200+ | Import 15 % du Google Ads spend seulement → notre Total Ad Spend Tracker 100 % avec alerte > 10 % d'écart. |
 | **GoProfit** | 50+ (4.9★ "Built for Shopify") | Smart Alerts statiques, pas de fraude intégrée → nos alerts dynamiques Profit + Fraude unifiées. |
 | **Lifetimely/AMP** | 468 (en chute libre post-acquisition) | Données devenues inexactes, COGS multi-fulfillment cassé, post-purchase upsells cassent les chiffres → tout refait correctement. |
+| **Aucun** | — | Currency FX Loss Tracker : aucun concurrent Shopify ne track les pertes cachées sur conversions multi-devises (1-3% par transaction). Exclusivité PilotProfit. |
 
 ### Anti-Fraude
 
-| Concurrent | Reviews | Gap que ProfitPilot exploite |
+| Concurrent | Reviews | Gap que PilotProfit exploite |
 |------------|---------|------------------------------|
 | **Chargeflow** | 20+ 1★ Shopify | "Auto submit without key evidence", "submit a prompt from ChatGPT", win rate PIRE après installation → notre **workflow humain obligatoire** + evidence builder avec approval + cross-LLM review avant soumission. |
 | **NoFraud / Wyllo** | 7K brands G2 | "Too sensitive, cancelling genuine orders. Probably costing me more in lost orders than fraud" → notre **False Positive Cost Tracker** (exclusivité). |
+| **Shopify natif** | — | Pas de détection de card testing en temps réel. Notre Card Testing Detector identifie les patterns de micro-transactions séquentielles AVANT que la vague ne passe. |
 
 ---
 
@@ -253,10 +258,10 @@ Ce qui nous rend difficile à remplacer après 3 mois d'utilisation :
 
 1. **Données financières historiques 6+ mois** : le merchant qui change d'outil perd sa baseline → switching cost élevé.
 2. **Données ML fraude calibrées par merchant** : chaque store a ses patterns. Le modèle apprend les siens en 60-90 jours.
-3. **Network effect de la blacklist cross-merchants** (tokenisée, anonyme) : plus on a de stores, plus la blacklist protège chacun.
+3. **Network effect de la blacklist cross-merchants** (tokenisée, anonyme) : plus on a de stores, plus la blacklist protège chacun. Idem pour la base de patterns de card testing partagée.
 4. **Intégrations profondes** : Shopify, Stripe, Meta, Google, TikTok, Amazon MCF, ShipBob, ShipStation, QuickBooks, Xero — chaque OAuth connecté est un ancrage.
 5. **False Positive Cost Tracker (exclusivité)** : aucun concurrent ne mesure le coût des blocages. Une fois que le merchant a cette data, il ne peut plus l'ignorer.
-6. **Landed Cost Calculator (exclusivité Shopify)** : AUCUN concurrent Shopify ne l'intègre en avril 2026.
+6. **Landed Cost Calculator + Currency FX Loss Tracker (exclusivités Shopify)** : AUCUN concurrent Shopify ne les intègre en avril 2026.
 7. **Feedback loop self-improving + Agent Constitutions** : chaque accept/reject du merchant rend le système plus juste, et chaque agent a des règles non-négociables qui garantissent la cohérence du comportement à travers le temps. Les concurrents partent de zéro sans ce socle.
 
 ---
@@ -286,6 +291,23 @@ Ce qui nous rend difficile à remplacer après 3 mois d'utilisation :
 2. **Agent Constitutions** — Chaque agent a son fichier `CONSTITUTION.md` (règles non-négociables chargées en system prompt à chaque invocation). Garantit la cohérence du comportement à travers le temps et les évolutions de code. Exemples : "Fraud Investigator ne soumet jamais d'evidence sans approbation humaine", "Profit Analyst ne diffuse jamais de chiffres si le Data Integrity Check a échoué".
 
 3. **Cross-LLM Review pour décisions high-stakes** — Pour les décisions à fort impact financier ou juridique (evidence chargeback > 500 $, smart hold sur commande > 1000 $, alert de margin breach critique), Claude Opus génère la décision → un second LLM (GPT-5 ou Gemini) la review → si désaccord, escalade humaine obligatoire. Coût marginal : 0.05-0.15 $ par décision, largement amorti par la réduction d'erreurs coûteuses.
+
+---
+
+## INFRASTRUCTURE & DOMAINES
+
+### Phase pre-launch (actuelle)
+- **Frontend :** `pilotprofit.vercel.app` (Vercel)
+- **Backend API :** `pilotprofit-api.up.railway.app` (Railway)
+- **Status :** staging + dogfooding, pas encore public
+
+### Phase post-launch (domaine acheté après le lancement du SaaS)
+- **Production frontend :** `pilotprofit.app` (redirect depuis `pilotprofit.vercel.app`)
+- **API :** `api.pilotprofit.app`
+- **Status page :** `status.pilotprofit.app`
+- **Emails :** `support@pilotprofit.app`, `security@pilotprofit.app`
+
+Raison : on verrouille d'abord le produit et la product-market-fit avant d'investir dans le nom de domaine. Les sous-domaines Vercel et Railway sont gratuits, stables, et suffisants pour les early adopters.
 
 ---
 
