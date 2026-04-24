@@ -1,4 +1,4 @@
-# CLAUDE.md — ProfitPilot
+# CLAUDE.md — PilotProfit
 
 > **Ce fichier est chargé automatiquement à chaque session Claude Code.**
 > **Lis-le EN ENTIER avant de toucher au code.**
@@ -7,13 +7,15 @@
 
 ## PROJET
 
-ProfitPilot — Agent IA santé financière complète pour merchants Shopify.
+PilotProfit — Agent IA santé financière complète pour merchants Shopify.
 41 features, 4 modules : Profit, Anti-Fraude, Intelligence, Tarifs & Landed Cost.
 App Shopify (OAuth, embedded) + dashboard standalone. Pricing : Free → Starter 49$ → Pro 129$ → Enterprise 249$.
 
 Système multi-agents orchestré par un **Supervisor Agent** (LangGraph) qui route vers 5 agents spécialistes, chacun régi par sa **Constitution** (fichier markdown chargé en system prompt).
 
-Repo GitHub : `profitpilot`. Standalone, pas de monorepo.
+Repo GitHub : `pilotprofit`. Standalone, pas de monorepo.
+
+**Infrastructure pre-launch :** Frontend sur `pilotprofit.vercel.app`, API sur `pilotprofit-api.up.railway.app`. Domaine `pilotprofit.app` sera acheté après le lancement public.
 
 ---
 
@@ -42,7 +44,7 @@ Repo GitHub : `profitpilot`. Standalone, pas de monorepo.
 - **Shopify App Bridge** — embedded app dans le Shopify Admin
 - **Shopify Polaris** — guidelines UI pour la cohérence Shopify
 - **Recharts** — visualisations profit/fraud dashboards
-- **Deploy : Vercel**
+- **Deploy : Vercel** (pre-launch : `pilotprofit.vercel.app`)
 
 ### Database
 - **Supabase PostgreSQL** — tables métier + auth + billing + agent
@@ -65,7 +67,7 @@ Repo GitHub : `profitpilot`. Standalone, pas de monorepo.
 ## STRUCTURE DU PROJET
 
 ```
-profitpilot/                            # Racine du repo GitHub
+pilotprofit/                            # Racine du repo GitHub
 ├── CLAUDE.md                           # CE FICHIER
 ├── context.md                          # Vision business, features, personas, pricing
 │
@@ -78,8 +80,8 @@ profitpilot/                            # Racine du repo GitHub
 │   │   ├── api/
 │   │   │   ├── routes/
 │   │   │   │   ├── auth.py             # Shopify OAuth install/callback + session
-│   │   │   │   ├── profit.py           # True profit, P&L, LTV, margins
-│   │   │   │   ├── fraud.py            # Pre-Ship Score, holds, false positive tracker
+│   │   │   │   ├── profit.py           # True profit, P&L, LTV, margins, FX loss
+│   │   │   │   ├── fraud.py            # Pre-Ship Score, holds, card testing, FP tracker
 │   │   │   │   ├── chargebacks.py      # Disputes list, evidence, approval workflow
 │   │   │   │   ├── ads.py              # Ad spend aggregation, integration health
 │   │   │   │   ├── tariffs.py          # Landed cost, tariff impact, duty tracker
@@ -141,7 +143,9 @@ profitpilot/                            # Racine du repo GitHub
 │   │   │   │   ├── return_cost.py      # Real cost of returns
 │   │   │   │   ├── landed_cost.py      # COGS + shipping + duties + tariffs
 │   │   │   │   ├── tariff_impact.py    # Simulate tariff changes impact
+│   │   │   │   ├── fx_loss.py          # Currency FX loss tracker (multi-devises)
 │   │   │   │   ├── fraud_scorer.py     # Pre-Ship Score (rules + ML)
+│   │   │   │   ├── card_testing.py     # Card testing pattern detector
 │   │   │   │   ├── friendly_fraud.py   # Friendly fraud pattern detection
 │   │   │   │   ├── return_abuse.py     # Wardrobing / serial returners
 │   │   │   │   ├── ratio_monitor.py    # Chargeback ratio vs Visa/MC thresholds
@@ -175,6 +179,7 @@ profitpilot/                            # Racine du repo GitHub
 │   │   │   ├── tsi_recovery.py         # TSI/Rocket recovery integration
 │   │   │   ├── openai_client.py        # OpenAI client pour cross-LLM review
 │   │   │   ├── gemini_client.py        # Gemini client pour cross-LLM review
+│   │   │   ├── fx_rates.py             # Multi-currency exchange rates (daily)
 │   │   │   ├── supabase.py             # Supabase client + helpers
 │   │   │   ├── email.py                # Resend email service
 │   │   │   └── blacklist.py            # Cross-merchant tokenized blacklist
@@ -182,10 +187,10 @@ profitpilot/                            # Racine du repo GitHub
 │   │   ├── models/
 │   │   │   ├── order.py                # Order, OrderItem, OrderProfit
 │   │   │   ├── merchant.py             # Merchant, Subscription
-│   │   │   ├── fraud.py                # FraudScore, Hold, Blacklist
+│   │   │   ├── fraud.py                # FraudScore, Hold, Blacklist, CardTestingEvent
 │   │   │   ├── chargeback.py           # Chargeback, Evidence, EvidenceApproval
 │   │   │   ├── ads.py                  # AdSpend, AdCampaign, AdAttribution
-│   │   │   ├── profit.py               # ProfitCalculation, DailyPnL, LTV
+│   │   │   ├── profit.py               # ProfitCalculation, DailyPnL, LTV, FXLoss
 │   │   │   ├── integration.py          # Integration, IntegrationHealth
 │   │   │   ├── tariff.py               # LandedCost, DutyPaid, TariffRate
 │   │   │   ├── agent_run.py            # AgentRun, AgentDecision, ReviewConsensus
@@ -199,9 +204,9 @@ profitpilot/                            # Racine du repo GitHub
 │   │
 │   ├── tasks/
 │   │   ├── celery_app.py               # Celery config + beat schedule
-│   │   ├── profit_tasks.py             # Nightly P&L, LTV refresh
+│   │   ├── profit_tasks.py             # Nightly P&L, LTV refresh, FX loss aggregation
 │   │   ├── ads_tasks.py                # Daily ad spend sync
-│   │   ├── fraud_tasks.py              # Real-time scoring, retraining
+│   │   ├── fraud_tasks.py              # Real-time scoring, card testing detection, retraining
 │   │   ├── chargeback_tasks.py         # Evidence building, deadline reminders
 │   │   ├── integrity_tasks.py          # Hourly reconciliation checks
 │   │   └── report_tasks.py             # Weekly report generation
@@ -235,8 +240,8 @@ profitpilot/                            # Racine du repo GitHub
 │   │   │   ├── dashboard/
 │   │   │   │   ├── layout.tsx          # Dashboard layout, navigation onglets
 │   │   │   │   ├── page.tsx            # Redirect vers /dashboard/profit
-│   │   │   │   ├── profit/page.tsx     # Onglet Profit (P&L, LTV, margins)
-│   │   │   │   ├── fraud/page.tsx      # Onglet Anti-Fraude (scores, holds, FP tracker)
+│   │   │   │   ├── profit/page.tsx     # Onglet Profit (P&L, LTV, margins, FX)
+│   │   │   │   ├── fraud/page.tsx      # Onglet Anti-Fraude (scores, holds, card testing, FP tracker)
 │   │   │   │   ├── chargebacks/page.tsx # Onglet Chargebacks (evidence approval UI)
 │   │   │   │   ├── ads/page.tsx        # Onglet Ads (spend 100%, integration health)
 │   │   │   │   ├── tariffs/page.tsx    # Onglet Landed Cost (Pro/Enterprise)
@@ -249,8 +254,8 @@ profitpilot/                            # Racine du repo GitHub
 │   │   │
 │   │   ├── components/
 │   │   │   ├── ui/                     # shadcn/ui components
-│   │   │   ├── profit/                 # PnLChart, LTVCurve, MarginCard
-│   │   │   ├── fraud/                  # RiskScore, HoldQueue, FalsePositiveCard
+│   │   │   ├── profit/                 # PnLChart, LTVCurve, MarginCard, FXLossCard
+│   │   │   ├── fraud/                  # RiskScore, HoldQueue, CardTestingAlert, FalsePositiveCard
 │   │   │   ├── chargebacks/            # EvidenceViewer, ApprovalFlow, DisputeList
 │   │   │   ├── ads/                    # AdSpendChart, IntegrationBadge
 │   │   │   ├── admin/                  # AgentStatusPanel, BudgetChart, TaskTimeline
@@ -491,6 +496,7 @@ class AgentError(AppError): ...        # Claude API, Mem0, LangGraph, Supervisor
 class ConstitutionError(AppError): ... # Constitution file missing ou violation détectée
 class ReviewError(AppError): ...       # Cross-LLM review échec (timeout, désaccord)
 class IntegrityError(AppError): ...    # Data reconciliation mismatch
+class FXError(AppError): ...           # FX rate fetch / conversion failure
 
 # Handler global — main.py
 @app.exception_handler(AppError)
@@ -564,12 +570,20 @@ SENTRY_DSN=https://...
 # === LangSmith ===
 LANGCHAIN_API_KEY=ls_...
 LANGCHAIN_TRACING_V2=true
-LANGCHAIN_PROJECT=profitpilot
+LANGCHAIN_PROJECT=pilotprofit
+
+# === FX rates (multi-currency) ===
+FX_RATES_PROVIDER=openexchangerates    # ou fixer.io, exchangerate-api
+FX_RATES_API_KEY=xxx
 
 # === App ===
 APP_ENV=development|staging|production
-APP_URL=https://profitpilot.app
-BACKEND_URL=https://api.profitpilot.app
+# Pre-launch URLs :
+APP_URL=https://pilotprofit.vercel.app
+BACKEND_URL=https://pilotprofit-api.up.railway.app
+# Post-launch (après achat du domaine) :
+# APP_URL=https://pilotprofit.app
+# BACKEND_URL=https://api.pilotprofit.app
 
 # === Encryption ===
 FERNET_KEY=xxx                         # Chiffrement tokens OAuth
@@ -578,7 +592,7 @@ FERNET_KEY=xxx                         # Chiffrement tokens OAuth
 BLACKLIST_HASH_SALT=xxx                # Salt pour tokenization
 
 # === Admin dashboard ===
-ADMIN_DASHBOARD_ALLOWED_EMAILS=founder@profitpilot.app,ops@profitpilot.app
+ADMIN_DASHBOARD_ALLOWED_EMAILS=founder@pilotprofit.app,ops@pilotprofit.app
 
 # === Recovery partners (optional) ===
 TSI_API_KEY=xxx
@@ -602,7 +616,7 @@ read_inventory      → Inventory cost, dead stock tracking
 read_locations      → Multi-warehouse COGS allocation
 ```
 
-**Important :** ProfitPilot est en READ-ONLY sur Shopify. Aucun write_*.
+**Important :** PilotProfit est en READ-ONLY sur Shopify. Aucun write_*.
 Raison : on ne modifie JAMAIS le store du merchant. On lit, on analyse, on alerte.
 
 ---
@@ -622,6 +636,7 @@ GET    /api/v1/profit/products           # Profit per product (sortable)
 GET    /api/v1/profit/ltv                # Clean LTV (excl. bots, non-buyers)
 GET    /api/v1/profit/cashflow-forecast  # 30/60/90d forecast
 GET    /api/v1/profit/margins/alerts     # Products under threshold
+GET    /api/v1/profit/fx-loss            # Currency FX loss per period / per currency
 
 # Fraud
 GET    /api/v1/fraud/score/{order_id}    # Pre-Ship Score + reasons
@@ -630,6 +645,7 @@ POST   /api/v1/fraud/holds/{id}/release  # Release hold (approve order)
 POST   /api/v1/fraud/holds/{id}/reject   # Cancel order as fraud
 GET    /api/v1/fraud/false-positive-cost # Net: savings vs lost revenue
 GET    /api/v1/fraud/ratio               # Chargeback ratio vs Visa/MC thresholds
+GET    /api/v1/fraud/card-testing/alerts # Active card testing attacks detected
 
 # Chargebacks
 GET    /api/v1/chargebacks                         # List disputes (paginated)
