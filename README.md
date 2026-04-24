@@ -1,4 +1,4 @@
-# ProfitPilot
+# PilotProfit
 
 > **See your true profit. Stop fraud before it ships. In minutes, not months.**
 
@@ -9,12 +9,24 @@ Agent IA santé financière complète pour merchants Shopify. 41 features, 4 mod
 ## TL;DR
 
 Les merchants Shopify perdent **30 000 $/an** à cause de 4 douleurs non corrélées :
-1. **Profit fantôme** — ils pensent gagner 48%, ils gagnent 23% (ad spend sous-compté, LTV gonflée, upsells cassés)
+1. **Profit fantôme** — ils pensent gagner 48%, ils gagnent 23% (ad spend sous-compté, LTV gonflée, upsells cassés, FX loss non tracké)
 2. **Chargebacks** — 800 $/mois en moyenne drainés, 4h/jour à assembler des preuves manuellement
 3. **Compta manuelle** — 20h/mois de DIY, 5K $/an de déductions manquées, urgences fiscales 3K $
 4. **Landed cost ignoré** — tarifs, duties, retours imports non-refondables
 
-Les outils actuels traitent ces 4 problèmes en silos. **ProfitPilot les unifie** dans un agent qui détecte, analyse, agit et apprend — avec workflow humain obligatoire avant toute action à fort impact.
+Les outils actuels traitent ces 4 problèmes en silos. **PilotProfit les unifie** dans un agent qui détecte, analyse, agit et apprend — avec workflow humain obligatoire avant toute action à fort impact.
+
+---
+
+## Infrastructure
+
+### Pre-launch (actuellement)
+- **Frontend** : https://pilotprofit.vercel.app (Vercel)
+- **Backend API** : https://pilotprofit-api.up.railway.app (Railway)
+
+### Post-launch (après achat du domaine)
+- **Production** : https://pilotprofit.app
+- **API** : https://api.pilotprofit.app
 
 ---
 
@@ -49,8 +61,8 @@ Un **Supervisor Agent** (LangGraph) route les tâches vers **5 agents spécialis
 
 | Agent | Responsabilité |
 |-------|----------------|
-| **Profit Analyst** | True profit, LTV propre, landed cost, cashflow forecast |
-| **Fraud Investigator** | Pre-Ship Score, patterns, False Positive tracking |
+| **Profit Analyst** | True profit, LTV propre, landed cost, cashflow forecast, FX loss |
+| **Fraud Investigator** | Pre-Ship Score, patterns, card testing, False Positive tracking |
 | **Chargeback Specialist** | Evidence building, workflow human-in-loop, recovery |
 | **Data Integrity** | Reconciliation Shopify ↔ Stripe ↔ Meta ↔ notre DB |
 | **Ads Sync** | Meta/Google/TikTok spend 100%, attribution, health |
@@ -65,8 +77,8 @@ Un **Supervisor Agent** (LangGraph) route les tâches vers **5 agents spécialis
 
 ## Les 4 modules (41 features)
 
-- **Module 1 — Profit** (15 features) : True Profit, App Cost Allocator, Daily P&L, Margin Alerts, Ad Spend 100%, LTV propre, Multi-Fulfillment Sync, Tax Ready, Cashflow Forecast, Data Integrity Check…
-- **Module 2 — Anti-Fraude** (18 features) : Pre-Ship Score, Smart Hold, Auto-Evidence Builder (avec approbation humaine), Ratio Monitor, Blacklist cross-merchants tokenisée, Friendly Fraud Detector, Freight Forwarder Detection, 3DS Recommender…
+- **Module 1 — Profit** (15 features) : True Profit, App Cost Allocator, Daily P&L, Margin Alerts, Ad Spend 100%, LTV propre, Multi-Fulfillment Sync, Tax Ready, Cashflow Forecast, Data Integrity Check, **Currency FX Loss Tracker**…
+- **Module 2 — Anti-Fraude** (18 features) : Pre-Ship Score, Smart Hold, Auto-Evidence Builder (avec approbation humaine), Ratio Monitor, Blacklist cross-merchants tokenisée, Friendly Fraud Detector, Freight Forwarder Detection, 3DS Recommender, **Card Testing Detector**…
 - **Module 3 — Intelligence** (5 features) : False Positive Cost Tracker (exclusivité), Promo Planner avec risque fraude, Return Abuse Detector…
 - **Module 4 — Tarifs & Landed Cost** (3 features) : Landed Cost Calculator, Tariff Impact Simulator, Non-Refundable Duty Tracker…
 
@@ -102,8 +114,8 @@ Détail et gating : [`docs/PRICING_PLANS.md`](docs/PRICING_PLANS.md)
 
 ```bash
 # Clone
-git clone https://github.com/YOUR_ORG/profitpilot.git
-cd profitpilot
+git clone https://github.com/YOUR_ORG/pilotprofit.git
+cd pilotprofit
 
 # Backend
 cd backend
@@ -119,7 +131,7 @@ npm install
 cp .env.example .env.local # Remplir les clés publiques
 
 # Redis local (Docker)
-docker run -d -p 6379:6379 --name profitpilot-redis redis:7-alpine
+docker run -d -p 6379:6379 --name pilotprofit-redis redis:7-alpine
 ```
 
 ### Lancer en dev
@@ -165,7 +177,7 @@ npm run test:e2e  # Playwright E2E
 ## Structure du repo
 
 ```
-profitpilot/
+pilotprofit/
 ├── CLAUDE.md                # Contexte principal Claude Code (à lire en premier)
 ├── context.md               # Vision business complète
 ├── README.md                # Ce fichier
@@ -227,7 +239,7 @@ Les 20 règles complètes sont dans [`CLAUDE.md`](CLAUDE.md). Les 6 les plus imp
 
 ## Concurrents et différenciation
 
-| Concurrent | Gap exploité par ProfitPilot |
+| Concurrent | Gap exploité par PilotProfit |
 |------------|------------------------------|
 | **TrueProfit** | Données fausses documentées → notre Data Integrity Check quotidien + LTV sans bots |
 | **BeProfit** | 15% du Google Ads spend seulement → notre Total Ad Spend 100% avec alerte écart > 10% |
@@ -235,6 +247,7 @@ Les 20 règles complètes sont dans [`CLAUDE.md`](CLAUDE.md). Les 6 les plus imp
 | **NoFraud/Wyllo** | Trop sensible, bloque des orders légitimes → notre False Positive Cost Tracker (exclusivité) |
 | **Lifetimely/AMP** | Données dégradées post-acquisition → tout refait correctement, multi-fulfillment natif |
 | **GoProfit** | Smart Alerts statiques, pas de fraude intégrée → alerts dynamiques Profit + Fraude unifiées |
+| **Aucun concurrent Shopify** | Currency FX Loss Tracker (exclusivité) + Card Testing Detector temps réel |
 
 Analyse complète : [`docs/COMPETITIVE_POSITIONING.md`](docs/COMPETITIVE_POSITIONING.md)
 
@@ -265,12 +278,12 @@ Workflow détaillé : [`CLAUDE.md`](CLAUDE.md) section "Workflow de développeme
 ## Security
 
 - Tous les tokens OAuth (Shopify, Meta, Google, TikTok, QuickBooks, Xero) sont chiffrés via Fernet avant stockage
-- Aucune donnée carte ne transite par ProfitPilot (PCI DSS compliance via Stripe)
+- Aucune donnée carte ne transite par PilotProfit (PCI DSS compliance via Stripe)
 - Row Level Security (RLS) sur toutes les tables Supabase
 - HMAC validation sur tous les webhooks entrants
 - Admin dashboard protégé par email-allowlist + IP-whitelist
 
-Report de vulnérabilité : `security@profitpilot.app` (PGP key dans [`docs/SECURITY.md`](docs/SECURITY.md))
+Report de vulnérabilité : `security@pilotprofit.app` (actif après achat du domaine ; avant cela, via GitHub Security Advisory privé).
 
 ---
 
@@ -282,11 +295,17 @@ Proprietary. All rights reserved.
 
 ## Liens
 
-- **Production** : https://profitpilot.app
-- **API docs** : https://api.profitpilot.app/docs
-- **Shopify App Store** : https://apps.shopify.com/profitpilot
-- **Status page** : https://status.profitpilot.app
-- **Support** : `support@profitpilot.app`
+### Pre-launch
+- **App (staging)** : https://pilotprofit.vercel.app
+- **API** : https://pilotprofit-api.up.railway.app
+- **API docs** : https://pilotprofit-api.up.railway.app/docs
+
+### Post-launch (à venir)
+- **Production** : https://pilotprofit.app
+- **API prod** : https://api.pilotprofit.app
+- **Shopify App Store** : https://apps.shopify.com/pilotprofit
+- **Status page** : https://status.pilotprofit.app
+- **Support** : `support@pilotprofit.app`
 
 ---
 
